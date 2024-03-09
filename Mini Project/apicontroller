@@ -1,0 +1,42 @@
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+
+namespace YourApiName.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class ItemsController : ControllerBase
+    {
+        [HttpGet("from-excel")]
+        public IActionResult GetItemsFromExcel()
+        {
+            List<Item> items = new List<Item>();
+
+            // file path
+            string filePath = ""F:\QuantHockey_1710021037.xlsx"";
+
+            using (var package = new ExcelPackage(new FileInfo(filePath)))
+            {
+                var worksheet = package.Workbook.Worksheets[0];
+
+                int rowCount = worksheet.Dimension.Rows;
+                int columnCount = worksheet.Dimension.Columns;
+
+                for (int row = 2; row <= rowCount; row++)dotne
+                {
+                    Item item = new Item
+                    {
+                        Id = int.Parse(worksheet.Cells[row, 1].Value.ToString()),
+                        Name = worksheet.Cells[row, 2].Value.ToString(),
+                        Price = decimal.Parse(worksheet.Cells[row, 3].Value.ToString())
+                    };
+
+                    items.Add(item);
+                }
+            }
+
+            return Ok(items);
+        }
+    }
+}
